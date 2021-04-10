@@ -2,6 +2,9 @@
 const {
   Model
 } = require('sequelize');
+
+// const PROTECTED_ATTRIBUTES = ['password', 'birthdate']
+
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     /**
@@ -11,6 +14,20 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+    }
+
+    toJSON() {
+      
+      // DI KO NASABAYAN TONG PART NA TO HEHE
+      // let attributes = this.get()
+      // for (key in PROTECTED_ATTRIBUTES) {
+      //   delete attributes[key]
+      // }
+
+      // return attributes
+
+      return { ...this.get(), password: undefined }
+      
     }
   };
   User.init({
