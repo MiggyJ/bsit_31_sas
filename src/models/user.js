@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
       
       // DI KO NASABAYAN TONG PART NA TO HEHE
       // let attributes = this.get()
-      // for (key in PROTECTED_ATTRIBUTES) {
+      // for (key of PROTECTED_ATTRIBUTES) {
       //   delete attributes[key]
       // }
 
