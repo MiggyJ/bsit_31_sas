@@ -14,6 +14,15 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      this.belongsTo(User, {
+        as: "created",
+        foreignKey: "created_by",
+      })
+
+      this.belongsTo(User, {
+        as: "updated",
+        foreignKey: "updated_by",
+      })
     }
 
     toJSON() {
@@ -103,6 +112,20 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: "Active"
     },
+    created_by: {
+      type: DataTypes.UUID,
+      references: {
+        model: User,
+        key: 'id'
+      }
+    },
+    updated_by: {
+      type: DataTypes.UUID,
+      references: {
+        model: User,
+        key: 'id'
+      }
+    }
   }, {
     sequelize,
     timestamps: true,

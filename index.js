@@ -2,21 +2,23 @@
 const express = require('express')
 const dotenv = require('dotenv')
 const db = require('./src/models')
+const jwt = require('jsonwebtoken')
+
+
+// Get config variables
+dotenv.config()
 
 db.sequelize
     .authenticate()
     .then(() => console.log('Connection has been established succesfully'))
     .catch(err => console.error('Unable to connect to database: ', err))
 
-if(process.env.ALLOW_SYNC){
+if(process.env.ALLOW_SYNC == 'true'){
     db.sequelize
         .sync({ alter: true })
         .then(() => console.log('Done updating database based on models'))
         .catch((err) => console.error(err))
 }
-
-// Get config variables
-dotenv.config()
 
 // Initialize app
 var app = express()
@@ -37,9 +39,27 @@ app.use((req, res, next) => {
     next()
 })
 
+const authenticateToken = async (req, res, next) => {
+    const authHeader = req.headers['Authorization']
+    const token = authHeader && authHeader.split(' ')[1]
+
+    if (!token) {
+        return res.sendStatus(401)
+    }
+
+    jwt.verify(token, process.env.JWT_TOKEN_SECRET, (err, user) => {
+        if (err) return res.sendStatus(403)
+        req.user = user
+        next()
+    })
+
+}
+
 // Routes
 const userRoutes = require('./src/routes/user.routes')
-app.use(`${process.env.API_VERSION}/user`, userRoutes);
+const loginRoutes = require('./src/routes/login.routes')
+app.use(`${process.env.API_VERSION}/user`, authenticateToken, userRoutes);
+app.use(`${process.env.API_VERSION}/login`, loginRoutes);
 
 
 app.get('/', (req, res) => {
